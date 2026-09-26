@@ -3,97 +3,225 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Prompt Generator</title>
+  <title>AI Prompt Generator Pro</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --panel-2: #1f2937;
+      --bg: #0b1020;
+      --bg-soft: #111827;
+      --panel: rgba(17, 24, 39, 0.9);
+      --panel-alt: rgba(15, 23, 42, 0.95);
+      --card: rgba(17, 24, 39, 0.75);
+      --card-strong: rgba(30, 41, 59, 0.9);
       --primary: #8b5cf6;
       --primary-2: #a78bfa;
       --secondary: #22c55e;
-      --text: #e5e7eb;
+      --secondary-2: #10b981;
+      --text: #edf2ff;
+      --text-soft: #cbd5e1;
       --muted: #94a3b8;
-      --border: rgba(255,255,255,0.08);
-      --danger: #ef4444;
+      --line: rgba(148, 163, 184, 0.18);
+      --danger: #fb7185;
       --warning: #fbbf24;
-      --success: #10b981;
-      --shadow: 0 18px 40px rgba(15, 23, 42, 0.45);
+      --success: #34d399;
+      --shadow: 0 20px 50px rgba(15, 23, 42, 0.45);
+      --input: rgba(15, 23, 42, 0.7);
+      --tag: rgba(139, 92, 246, 0.16);
+      --accent: #67e8f9;
+    }
+
+    body.light {
+      --bg: #f3f7ff;
+      --bg-soft: #e8eefb;
+      --panel: rgba(255, 255, 255, 0.9);
+      --panel-alt: rgba(245, 247, 255, 0.95);
+      --card: rgba(255,255,255,0.7);
+      --card-strong: rgba(255,255,255,0.96);
+      --primary: #7c3aed;
+      --primary-2: #8b5cf6;
+      --secondary: #16a34a;
+      --secondary-2: #10b981;
+      --text: #0f172a;
+      --text-soft: #334155;
+      --muted: #64748b;
+      --line: rgba(148, 163, 184, 0.24);
+      --danger: #e11d48;
+      --warning: #d97706;
+      --success: #059669;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+      --input: rgba(255, 255, 255, 0.88);
+      --tag: rgba(124, 58, 237, 0.1);
+      --accent: #0ea5e9;
     }
 
     * { box-sizing: border-box; }
 
-    body {
+    html, body {
       margin: 0;
+      min-height: 100%;
       font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #111827 35%, #1e1b4b 100%);
+      background: linear-gradient(140deg, var(--bg) 0%, var(--bg-soft) 50%, #1e1b4b 100%);
       color: var(--text);
-      min-height: 100vh;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    body.light {
+      background: linear-gradient(140deg, #edf3ff 0%, #eef2ff 35%, #ecfeff 100%);
     }
 
     .container {
-      width: min(1200px, calc(100% - 24px));
-      margin: 28px auto;
-      padding: 0;
+      width: min(1300px, calc(100% - 24px));
+      margin: 24px auto 40px;
     }
 
-    .app {
-      background: rgba(15, 23, 42, 0.82);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
+    .shell {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 30px;
       overflow: hidden;
+      box-shadow: var(--shadow);
       backdrop-filter: blur(8px);
     }
 
-    .header {
-      padding: 28px 28px 18px;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(34, 197, 94, 0.12));
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 22px 28px 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(34, 197, 94, 0.08));
     }
 
-    .tag {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: rgba(167, 139, 250, 0.18);
-      color: #ddd6fe;
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border: 1px solid rgba(167,139,250,0.2);
-      margin-bottom: 10px;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
     }
 
-    h1 {
-      margin: 0 0 8px;
-      font-size: clamp(28px, 4vw, 42px);
-      line-height: 1.15;
+    .brand-badge {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: white;
+      box-shadow: 0 12px 24px rgba(139, 92, 246, 0.25);
     }
 
-    .subtitle {
+    .brand h1 {
       margin: 0;
-      color: var(--muted);
-      font-size: 15px;
+      font-size: clamp(24px, 2.5vw, 34px);
+      line-height: 1.1;
     }
 
-    .content {
+    .brand small {
+      display: block;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      font-size: 11px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .theme-btn, .mini-btn, .primary-btn, .success-btn, .warning-btn, .danger-btn {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      border-radius: 12px;
+      font-weight: 700;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      font-size: 14px;
+    }
+
+    .theme-btn, .mini-btn {
+      color: var(--text);
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+    }
+
+    .primary-btn {
+      padding: 12px 18px;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 12px 25px rgba(139, 92, 246, 0.28);
+    }
+
+    .success-btn {
+      background: linear-gradient(135deg, var(--secondary), var(--secondary-2));
+      color: white;
+      padding: 12px 18px;
+    }
+
+    .warning-btn {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      color: #111827;
+      padding: 12px 18px;
+    }
+
+    .danger-btn {
+      background: linear-gradient(135deg, #ef4444, #fb7185);
+      color: white;
+      padding: 12px 18px;
+    }
+
+    .top-actions button:hover, .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .layout {
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
-      gap: 0;
+      min-height: 780px;
     }
 
     .panel {
-      padding: 22px 20px;
+      padding: 24px 22px;
     }
 
     .panel.left {
-      border-right: 1px solid var(--border);
-      background: rgba(17, 24, 39, 0.8);
+      border-right: 1px solid var(--line);
+      background: rgba(15, 23, 42, 0.15);
     }
 
     .panel.right {
-      background: rgba(17, 24, 39, 0.72);
+      background: rgba(15, 23, 42, 0.1);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .section-header h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      background: var(--tag);
+      color: #d8b4fe;
+      border: 1px solid rgba(167, 139, 250, 0.24);
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-weight: 700;
     }
 
     .field-grid {
@@ -103,10 +231,10 @@
     }
 
     .form-group {
-      margin-bottom: 16px;
       display: flex;
       flex-direction: column;
       gap: 8px;
+      margin-bottom: 16px;
     }
 
     .full {
@@ -115,146 +243,262 @@
 
     label {
       font-size: 13px;
-      color: #dbeafe;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-
-    input, select, textarea, button {
-      font: inherit;
+      font-weight: 700;
+      color: var(--text-soft);
     }
 
     input, select, textarea {
       width: 100%;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      background: rgba(15, 23, 42, 0.85);
-      color: var(--text);
       border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.26);
+      background: var(--input);
+      color: var(--text);
       padding: 12px 14px;
+      font: inherit;
       outline: none;
-      transition: 0.2s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     input:focus, select:focus, textarea:focus {
-      border-color: rgba(139, 92, 246, 0.9);
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+      border-color: rgba(139, 92, 246, 0.8);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
     }
 
     textarea {
       resize: vertical;
-      min-height: 108px;
+      min-height: 110px;
     }
 
-    .result-box {
-      min-height: 260px;
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 12px 0 18px;
     }
 
-    .actions {
+    .template-btn {
+      background: rgba(148, 163, 184, 0.1);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.2s ease;
+    }
+
+    .template-btn:hover {
+      background: rgba(139, 92, 246, 0.12);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      background: rgba(148, 163, 184, 0.07);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      color: var(--text-soft);
+      font-size: 14px;
+    }
+
+    .switch-row input[type='checkbox'] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .btn-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    .btn {
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      padding: 12px 18px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-    }
-
-    .btn:hover { transform: translateY(-1px); }
-    .btn:active { transform: translateY(0); }
-    .btn.primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      color: white;
-      box-shadow: 0 12px 24px rgba(139, 92, 246, 0.35);
-    }
-
-    .btn.secondary {
-      background: rgba(148,163,184,0.12);
-      color: var(--text);
-      border: 1px solid rgba(148,163,184,0.24);
-    }
-
-    .btn.success {
-      background: linear-gradient(135deg, #16a34a, #22c55e);
-      color: white;
+      gap: 10px;
+      margin-top: 10px;
     }
 
     .status {
-      min-height: 24px;
+      min-height: 22px;
       font-size: 13px;
-      margin-top: 10px;
+      margin-top: 12px;
       color: var(--success);
-      font-weight: 600;
+      font-weight: 700;
     }
 
-    .inline-note {
+    .output-box {
+      min-height: 360px;
+      background: rgba(15, 23, 42, 0.68);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      color: var(--text);
+      padding: 16px 18px;
+      line-height: 1.65;
+      font-size: 15px;
+      width: 100%;
+    }
+
+    .history-box {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .history-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .history-item {
+      background: rgba(148, 163, 184, 0.06);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 12px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .history-item:hover {
+      border-color: rgba(139, 92, 246, 0.35);
+      background: rgba(139, 92, 246, 0.08);
+    }
+
+    .history-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .history-item small {
+      color: var(--muted);
+    }
+
+    .right-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .muted {
       color: var(--muted);
       font-size: 12px;
-      margin-top: 8px;
     }
 
-    @media (max-width: 900px) {
-      .content { grid-template-columns: 1fr; }
-      .panel.left { border-right: none; border-bottom: 1px solid var(--border); }
+    .count-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: var(--success);
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .panel.left { border-right: none; border-bottom: 1px solid var(--line); }
       .field-grid { grid-template-columns: 1fr; }
+      .quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .topbar { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 560px) {
+      .quick-grid { grid-template-columns: 1fr; }
+      .topbar, .panel { padding-left: 16px; padding-right: 16px; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="app">
-      <div class="header">
-        <span class="tag">AI Tool</span>
-        <h1>AI Prompt Generator</h1>
-        <p class="subtitle">Generate powerful prompts for any topic in seconds. Perfect for ChatGPT, Claude, Gemini, and other AI tools.</p>
-      </div>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-badge">AI</div>
+          <div>
+            <h1>Prompt Generator Pro</h1>
+            <small>Generate smart prompts in seconds</small>
+          </div>
+        </div>
 
-      <div class="content">
+        <div class="top-actions">
+          <button class="theme-btn" id="themeToggle" type="button">🌙 Dark Mode</button>
+          <div class="count-box" id="historyCount">0 saved</div>
+        </div>
+      </header>
+
+      <div class="layout">
         <div class="panel left">
+          <div class="section-header">
+            <h3>Prompt Builder</h3>
+            <span class="pill">Ready</span>
+          </div>
+
+          <div class="quick-grid" id="quickTemplates">
+            <button class="template-btn" data-template="blog">Blog Writer</button>
+            <button class="template-btn" data-template="seo">SEO Writer</button>
+            <button class="template-btn" data-template="marketing">Marketing Copy</button>
+            <button class="template-btn" data-template="email">Email Campaign</button>
+            <button class="template-btn" data-template="study">Study Guide</button>
+            <button class="template-btn" data-template="code">Code Helper</button>
+          </div>
+
           <div class="field-grid">
             <div class="form-group">
               <label for="topic">Topic</label>
-              <input id="topic" type="text" placeholder="Example: Digital marketing for small businesses" />
+              <input id="topic" type="text" placeholder="e.g. Small business SEO strategy" />
             </div>
 
             <div class="form-group">
               <label for="goal">Main Goal</label>
-              <input id="goal" type="text" placeholder="Example: Create a high-converting blog post" />
+              <input id="goal" type="text" placeholder="e.g. Create a high-converting article" />
             </div>
 
             <div class="form-group">
-              <label for="promptType">Prompt Type</label>
-              <select id="promptType">
-                <option value="general">General AI Prompt</option>
+              <label for="category">Prompt Category</label>
+              <select id="category">
+                <option value="general">General</option>
                 <option value="blog">Blog Writing</option>
                 <option value="seo">SEO Article</option>
-                <option value="social">Social Media Post</option>
+                <option value="social">Social Media</option>
                 <option value="marketing">Marketing Copy</option>
                 <option value="email">Email Campaign</option>
                 <option value="business">Business Strategy</option>
-                <option value="study">Study / Learning</option>
+                <option value="study">Study & Learning</option>
                 <option value="code">Coding / Development</option>
                 <option value="product">Product Description</option>
+                <option value="creative">Creative Writing</option>
               </select>
             </div>
 
             <div class="form-group">
-              <label for="targetAudience">Target Audience</label>
-              <select id="targetAudience">
+              <label for="platform">AI Platform</label>
+              <select id="platform">
+                <option value="ChatGPT">ChatGPT</option>
+                <option value="Claude">Claude</option>
+                <option value="Gemini">Gemini</option>
+                <option value="Copilot">Copilot</option>
+                <option value="General AI">General AI</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="audience">Target Audience</label>
+              <select id="audience">
                 <option value="general audience">General Audience</option>
                 <option value="beginners">Beginners</option>
-                <option value="experts">Experts</option>
                 <option value="students">Students</option>
                 <option value="business owners">Business Owners</option>
                 <option value="marketers">Marketers</option>
                 <option value="developers">Developers</option>
                 <option value="content creators">Content Creators</option>
+                <option value="experts">Experts</option>
               </select>
             </div>
 
@@ -279,19 +523,21 @@
                 <option value="Arabic">Arabic</option>
                 <option value="Spanish">Spanish</option>
                 <option value="French">French</option>
+                <option value="German">German</option>
               </select>
             </div>
 
             <div class="form-group">
               <label for="outputFormat">Output Format</label>
               <select id="outputFormat">
-                <option value="detailed paragraph">Detailed Paragraph</option>
+                <option value="detailed article">Detailed Article</option>
                 <option value="step-by-step guide">Step-by-Step Guide</option>
                 <option value="bullet points">Bullet Points</option>
-                <option value="full article">Full Article</option>
-                <option value="social media copy">Social Media Copy</option>
+                <option value="full blog post">Full Blog Post</option>
+                <option value="social media caption">Social Media Caption</option>
                 <option value="email template">Email Template</option>
                 <option value="structured plan">Structured Plan</option>
+                <option value="list of ideas">List of Ideas</option>
               </select>
             </div>
 
@@ -307,24 +553,54 @@
 
             <div class="form-group full">
               <label for="extraDetails">Extra Instructions</label>
-              <textarea id="extraDetails" placeholder="Example: Include headings, examples, SEO keywords, CTA, and actionable steps. Keep it beginner-friendly."></textarea>
+              <textarea id="extraDetails" placeholder="e.g. Include clear headings, examples, SEO keywords, CTA, and a strong conclusion."></textarea>
             </div>
           </div>
 
-          <div class="actions">
-            <button class="btn primary" id="generateBtn">Generate Prompt</button>
-            <button class="btn secondary" id="resetBtn" type="button">Reset</button>
-            <button class="btn success" id="copyBtn" type="button">Copy</button>
+          <div class="switch-row">
+            <span>Include headings</span>
+            <input id="includeHeadings" type="checkbox" checked />
+          </div>
+
+          <div class="switch-row">
+            <span>Include examples</span>
+            <input id="includeExamples" type="checkbox" checked />
+          </div>
+
+          <div class="switch-row">
+            <span>Include CTA</span>
+            <input id="includeCTA" type="checkbox" checked />
+          </div>
+
+          <div class="btn-row">
+            <button class="primary-btn" id="generateBtn" type="button">Generate Prompt</button>
+            <button class="success-btn" id="saveBtn" type="button">Save Prompt</button>
+            <button class="warning-btn" id="randomBtn" type="button">Random</button>
+            <button class="danger-btn" id="resetBtn" type="button">Reset</button>
           </div>
 
           <div class="status" id="statusMessage" aria-live="polite"></div>
-          <div class="inline-note">Tip: Use this tool for blogs, SEO, marketing, coding, business, study, and content creation.</div>
         </div>
 
         <div class="panel right">
-          <div class="form-group">
-            <label for="outputPrompt">Generated Prompt</label>
-            <textarea id="outputPrompt" class="result-box" readonly placeholder="Your generated prompt will appear here..."></textarea>
+          <div class="section-header">
+            <h3>Generated Output</h3>
+            <span class="pill">Live</span>
+          </div>
+
+          <div class="right-actions">
+            <button class="mini-btn" id="copyBtn" type="button">Copy</button>
+            <button class="mini-btn" id="downloadBtn" type="button">Download .txt</button>
+            <button class="mini-btn" id="clearHistoryBtn" type="button">Clear History</button>
+          </div>
+
+          <textarea id="outputPrompt" class="output-box" readonly placeholder="Your generated prompt will appear here..."></textarea>
+
+          <div class="history-box">
+            <div class="section-header" style="margin-bottom: 0;">
+              <h3>Recent Prompts</h3>
+            </div>
+            <div class="history-list" id="historyList"></div>
           </div>
         </div>
       </div>
@@ -332,145 +608,335 @@
   </div>
 
   <script>
-    const formIds = {
-      topic: 'topic',
-      goal: 'goal',
-      promptType: 'promptType',
-      targetAudience: 'targetAudience',
-      tone: 'tone',
-      language: 'language',
-      outputFormat: 'outputFormat',
-      length: 'length',
-      extraDetails: 'extraDetails'
+    const templateLibrary = {
+      blog: {
+        topic: 'AI tools for content creators',
+        goal: 'Write a helpful blog post that teaches beginners how to use AI tools effectively',
+        category: 'blog',
+        platform: 'ChatGPT'
+      },
+      seo: {
+        topic: 'SEO strategy for local businesses',
+        goal: 'Create an SEO-focused article with keywords and search intent optimization',
+        category: 'seo',
+        platform: 'ChatGPT'
+      },
+      marketing: {
+        topic: 'Digital marketing for startups',
+        goal: 'Write compelling ad copy that turns visitors into customers',
+        category: 'marketing',
+        platform: 'Gemini'
+      },
+      email: {
+        topic: 'Email campaign for product launch',
+        goal: 'Create an engaging email sequence that increases conversions and product awareness',
+        category: 'email',
+        platform: 'Claude'
+      },
+      study: {
+        topic: 'Study techniques for exam preparation',
+        goal: 'Build a clear study plan that improves learning and retention',
+        category: 'study',
+        platform: 'Copilot'
+      },
+      code: {
+        topic: 'JavaScript project for beginners',
+        goal: 'Explain the project clearly and provide clean, readable code examples',
+        category: 'code',
+        platform: 'Copilot'
+      }
     };
 
-    const defaults = {
-      topic: 'AI tools for content creators',
-      goal: 'Create a high-quality article that helps beginners understand the topic clearly',
-      promptType: 'blog',
-      targetAudience: 'beginners',
-      tone: 'professional',
-      language: 'English',
-      outputFormat: 'full article',
-      length: 'medium',
-      extraDetails: 'Use easy-to-understand language, add headings, examples, and a conclusion. Include actionable tips.'
-    };
+    const randomTopics = [
+      'AI tools for business growth',
+      'Freelancing strategy for beginners',
+      'How to start a blog from scratch',
+      'Effective social media marketing ideas',
+      'Healthy lifestyle habits for professionals',
+      'SEO techniques for small businesses',
+      'Productivity hacks for remote workers',
+      'Best website design ideas for startups',
+      'Email marketing funnels for ecommerce',
+      'Automation tools for content creators'
+    ];
+
+    const storageKey = 'promptGeneratorProHistory';
+    const themeKey = 'themePromptGeneratorPro';
+
+    function setStatus(message, type = 'success') {
+      const el = document.getElementById('statusMessage');
+      el.textContent = message;
+      el.style.color = type === 'error' ? '#fda4af' : '#86efac';
+    }
+
+    function escapeInput(value) {
+      return String(value || '').replace(/\s+/g, ' ').trim();
+    }
 
     function getValue(id) {
       return document.getElementById(id).value.trim();
     }
 
-    function setStatus(message, type = 'success') {
-      const statusEl = document.getElementById('statusMessage');
-      statusEl.textContent = message;
-      statusEl.style.color = type === 'error' ? '#fca5a5' : '#86efac';
+    function getChecked(id) {
+      return document.getElementById(id).checked;
     }
 
-    function escapePrompt(value) {
-      return value.replace(/\s+/g, ' ').trim();
+    function applyTheme(theme) {
+      const body = document.body;
+      const isLight = theme === 'light';
+      body.classList.toggle('light', isLight);
+      const toggle = document.getElementById('themeToggle');
+      toggle.textContent = isLight ? '🌙 Dark Mode' : '☀️ Light Mode';
+      localStorage.setItem(themeKey, theme);
+    }
+
+    function getSavedHistory() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveHistory(entries) {
+      localStorage.setItem(storageKey, JSON.stringify(entries.slice(0, 8)));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const list = document.getElementById('historyList');
+      const history = getSavedHistory();
+      document.getElementById('historyCount').textContent = `${history.length} saved`;
+
+      if (!history.length) {
+        list.innerHTML = '<div class="muted">No saved prompts yet.</div>';
+        return;
+      }
+
+      list.innerHTML = history.map((item, index) => `
+        <div class="history-item" data-index="${index}" title="Load this prompt">
+          <strong>${escapeHtml(item.title)}</strong>
+          <small>${escapeHtml(item.category || 'General')} • ${escapeHtml(item.platform || 'AI')}</small>
+        </div>
+      `).join('');
+
+      list.querySelectorAll('.history-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const idx = Number(item.getAttribute('data-index'));
+          const saved = getSavedHistory()[idx];
+          if (saved) {
+            document.getElementById('outputPrompt').value = saved.prompt;
+            setStatus('Saved prompt loaded.');
+          }
+        });
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
 
     function buildPrompt() {
-      const topic = escapePrompt(getValue(formIds.topic)) || defaults.topic;
-      const goal = escapePrompt(getValue(formIds.goal)) || defaults.goal;
-      const type = document.getElementById(formIds.promptType).value || defaults.promptType;
-      const audience = document.getElementById(formIds.targetAudience).value || defaults.targetAudience;
-      const tone = document.getElementById(formIds.tone).value || defaults.tone;
-      const language = document.getElementById(formIds.language).value || defaults.language;
-      const format = document.getElementById(formIds.outputFormat).value || defaults.outputFormat;
-      const length = document.getElementById(formIds.length).value || defaults.length;
-      const details = escapePrompt(getValue(formIds.extraDetails)) || defaults.extraDetails;
+      const topic = escapeInput(getValue('topic')) || 'AI-powered solutions for modern businesses';
+      const goal = escapeInput(getValue('goal')) || 'Help the user understand the topic clearly and create a practical, useful output';
+      const category = document.getElementById('category').value || 'general';
+      const platform = document.getElementById('platform').value || 'General AI';
+      const audience = document.getElementById('audience').value || 'general audience';
+      const tone = document.getElementById('tone').value || 'professional';
+      const language = document.getElementById('language').value || 'English';
+      const format = document.getElementById('outputFormat').value || 'detailed article';
+      const length = document.getElementById('length').value || 'medium';
+      const details = escapeInput(getValue('extraDetails')) || 'Use clear structure, practical examples, a helpful conclusion, and engaging language.';
+      const includeHeadings = getChecked('includeHeadings');
+      const includeExamples = getChecked('includeExamples');
+      const includeCTA = getChecked('includeCTA');
 
-      let typeLabel = 'general AI prompt';
-      if (type === 'blog') typeLabel = 'blog writing prompt';
-      if (type === 'seo') typeLabel = 'SEO article prompt';
-      if (type === 'social') typeLabel = 'social media content prompt';
-      if (type === 'marketing') typeLabel = 'marketing copy prompt';
-      if (type === 'email') typeLabel = 'email campaign prompt';
-      if (type === 'business') typeLabel = 'business strategy prompt';
-      if (type === 'study') typeLabel = 'study and learning prompt';
-      if (type === 'code') typeLabel = 'coding and development prompt';
-      if (type === 'product') typeLabel = 'product description prompt';
+      const categoryLabel = {
+        general: 'general AI prompt',
+        blog: 'blog writing prompt',
+        seo: 'SEO article prompt',
+        social: 'social media content prompt',
+        marketing: 'marketing copy prompt',
+        email: 'email campaign prompt',
+        business: 'business strategy prompt',
+        study: 'study and learning prompt',
+        code: 'coding and development prompt',
+        product: 'product description prompt',
+        creative: 'creative writing prompt'
+      }[category] || 'AI prompt';
 
-      let outputStr = `Act as an expert content strategist and copywriter.\n\n`;
-      outputStr += `Create a ${typeLabel} about "${topic}".\n`;
-      outputStr += `The main goal is: ${goal}.\n`;
-      outputStr += `Write for ${audience} in a ${tone} tone.\n`;
-      outputStr += `The final output should be in ${language}, and the content should be delivered as a ${format}.\n`;
-      outputStr += `Keep the response ${length} in length and make it highly useful, engaging, and actionable.\n\n`;
-      outputStr += `Additional instructions: ${details}.\n\n`;
-      outputStr += `Please include strong headings, clear structure, practical examples, and a polished final result.`;
+      const headingText = includeHeadings ? 'Include clear headings, subheadings, and a clean structure.' : 'Keep it simple and direct without headings.';
+      const exampleText = includeExamples ? 'Add practical examples and real-world scenarios.' : 'Do not include examples unless necessary.';
+      const ctaText = includeCTA ? 'Finish with a strong call to action or next step.' : 'Avoid a call to action.';
 
-      return outputStr;
+      return [
+        `Act as an expert AI assistant and content strategist.`,
+        '',
+        `Create a ${categoryLabel} for the topic: "${topic}".`,
+        `Main objective: ${goal}.`,
+        `Audience: ${audience}.`,
+        `Tone: ${tone}.`,
+        `Language: ${language}.`,
+        `Platform: ${platform}.`,
+        `Output format: ${format}.`,
+        `Length: ${length}.`,
+        '',
+        `Additional instructions: ${details}`,
+        headingText,
+        exampleText,
+        ctaText,
+        '',
+        'Make the response highly useful, easy to understand, and professionally written.'
+      ].join('\n');
     }
 
     function generatePrompt() {
-      const generated = buildPrompt();
-      document.getElementById('outputPrompt').value = generated;
+      const prompt = buildPrompt();
+      document.getElementById('outputPrompt').value = prompt;
       setStatus('Prompt generated successfully.');
     }
 
     function copyPrompt() {
-      const output = document.getElementById('outputPrompt');
-      const text = output.value.trim();
-
+      const text = document.getElementById('outputPrompt').value.trim();
       if (!text) {
-        setStatus('Please generate a prompt first.', 'error');
+        setStatus('Generate a prompt before copying.', 'error');
         return;
       }
 
-      try {
-        output.focus();
-        output.select();
-        document.execCommand('copy');
-        setStatus('Prompt copied to clipboard.');
-      } catch (error) {
-        try {
-          navigator.clipboard.writeText(text).then(() => {
-            setStatus('Prompt copied to clipboard.');
-          }).catch(() => {
-            setStatus('Copy failed. Please select and copy manually.', 'error');
-          });
-        } catch (e) {
-          setStatus('Copy failed. Please select and copy manually.', 'error');
-        }
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text)
+          .then(() => setStatus('Prompt copied to clipboard.'))
+          .catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
       }
     }
 
-    function fillDefaults() {
-      document.getElementById(formIds.topic).value = defaults.topic;
-      document.getElementById(formIds.goal).value = defaults.goal;
-      document.getElementById(formIds.promptType).value = defaults.promptType;
-      document.getElementById(formIds.targetAudience).value = defaults.targetAudience;
-      document.getElementById(formIds.tone).value = defaults.tone;
-      document.getElementById(formIds.language).value = defaults.language;
-      document.getElementById(formIds.outputFormat).value = defaults.outputFormat;
-      document.getElementById(formIds.length).value = defaults.length;
-      document.getElementById(formIds.extraDetails).value = defaults.extraDetails;
-      const output = document.getElementById('outputPrompt');
-      output.value = buildPrompt();
-      setStatus('Default values loaded.');
+    function fallbackCopy(value) {
+      const el = document.getElementById('outputPrompt');
+      el.focus();
+      el.select();
+      try {
+        document.execCommand('copy');
+        setStatus('Prompt copied to clipboard.');
+      } catch (err) {
+        setStatus('Copy failed. Please select and copy manually.', 'error');
+      }
+    }
+
+    function downloadPrompt() {
+      const text = document.getElementById('outputPrompt').value.trim();
+      if (!text) {
+        setStatus('Generate a prompt before downloading.', 'error');
+        return;
+      }
+
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ai-prompt.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setStatus('Prompt downloaded as .txt');
+    }
+
+    function savePrompt() {
+      const prompt = document.getElementById('outputPrompt').value.trim();
+      if (!prompt) {
+        setStatus('Generate a prompt before saving.', 'error');
+        return;
+      }
+
+      const history = getSavedHistory();
+      const item = {
+        title: escapeInput(getValue('topic')) || 'Untitled Prompt',
+        category: document.getElementById('category').value || 'general',
+        platform: document.getElementById('platform').value || 'General AI',
+        prompt
+      };
+
+      const updated = [item, ...history.filter(entry => entry.prompt !== prompt)].slice(0, 8);
+      saveHistory(updated);
+      setStatus('Prompt saved to recent history.');
+    }
+
+    function clearHistory() {
+      localStorage.removeItem(storageKey);
+      renderHistory();
+      setStatus('History cleared.');
     }
 
     function resetForm() {
       document.getElementById('topic').value = '';
       document.getElementById('goal').value = '';
-      document.getElementById('promptType').value = 'general';
-      document.getElementById('targetAudience').value = 'general audience';
+      document.getElementById('category').value = 'general';
+      document.getElementById('platform').value = 'ChatGPT';
+      document.getElementById('audience').value = 'general audience';
       document.getElementById('tone').value = 'professional';
       document.getElementById('language').value = 'English';
-      document.getElementById('outputFormat').value = 'detailed paragraph';
+      document.getElementById('outputFormat').value = 'detailed article';
       document.getElementById('length').value = 'medium';
       document.getElementById('extraDetails').value = '';
+      document.getElementById('includeHeadings').checked = true;
+      document.getElementById('includeExamples').checked = true;
+      document.getElementById('includeCTA').checked = true;
       document.getElementById('outputPrompt').value = '';
       setStatus('Form reset.');
     }
 
+    function randomizePrompt() {
+      const r = randomTopics[Math.floor(Math.random() * randomTopics.length)];
+      const categoryOptions = ['blog', 'seo', 'marketing', 'business', 'creative', 'study'];
+      const category = categoryOptions[Math.floor(Math.random() * categoryOptions.length)];
+      document.getElementById('topic').value = r;
+      document.getElementById('category').value = category;
+      document.getElementById('goal').value = 'Create a practical, high-value solution with actionable steps and clear examples';
+      document.getElementById('platform').value = 'ChatGPT';
+      document.getElementById('tone').value = 'engaging';
+      document.getElementById('outputFormat').value = 'full blog post';
+      generatePrompt();
+      setStatus('Random prompt loaded.');
+    }
+
+    function applyTemplate(type) {
+      const source = templateLibrary[type] || templateLibrary.blog;
+      document.getElementById('topic').value = source.topic;
+      document.getElementById('goal').value = source.goal;
+      document.getElementById('category').value = source.category || 'general';
+      document.getElementById('platform').value = source.platform || 'ChatGPT';
+      setStatus(`Loaded ${type} template.`);
+      generatePrompt();
+    }
+
     document.getElementById('generateBtn').addEventListener('click', generatePrompt);
     document.getElementById('copyBtn').addEventListener('click', copyPrompt);
+    document.getElementById('downloadBtn').addEventListener('click', downloadPrompt);
+    document.getElementById('saveBtn').addEventListener('click', savePrompt);
     document.getElementById('resetBtn').addEventListener('click', resetForm);
+    document.getElementById('randomBtn').addEventListener('click', randomizePrompt);
+    document.getElementById('clearHistoryBtn').addEventListener('click', clearHistory);
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const current = document.body.classList.contains('light') ? 'dark' : 'light';
+      applyTheme(current);
+    });
 
-    fillDefaults();
+    document.querySelectorAll('.template-btn').forEach(btn => {
+      btn.addEventListener('click', () => applyTemplate(btn.dataset.template));
+    });
+
+    const savedTheme = localStorage.getItem(themeKey) || 'dark';
+    applyTheme(savedTheme);
+    renderHistory();
+
+    document.getElementById('outputPrompt').value = buildPrompt();
   </script>
 </body>
 </html>
