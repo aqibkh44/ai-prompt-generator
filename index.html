@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Prompt Generator</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --primary: #8b5cf6;
+      --primary-2: #a78bfa;
+      --secondary: #22c55e;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --border: rgba(255,255,255,0.08);
+      --danger: #ef4444;
+      --warning: #fbbf24;
+      --success: #10b981;
+      --shadow: 0 18px 40px rgba(15, 23, 42, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #111827 35%, #1e1b4b 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .container {
+      width: min(1200px, calc(100% - 24px));
+      margin: 28px auto;
+      padding: 0;
+    }
+
+    .app {
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
+
+    .header {
+      padding: 28px 28px 18px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(34, 197, 94, 0.12));
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(167, 139, 250, 0.18);
+      color: #ddd6fe;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid rgba(167,139,250,0.2);
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 0;
+    }
+
+    .panel {
+      padding: 22px 20px;
+    }
+
+    .panel.left {
+      border-right: 1px solid var(--border);
+      background: rgba(17, 24, 39, 0.8);
+    }
+
+    .panel.right {
+      background: rgba(17, 24, 39, 0.72);
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 13px;
+      color: #dbeafe;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    input, select, textarea, button {
+      font: inherit;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(15, 23, 42, 0.85);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px 14px;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(139, 92, 246, 0.9);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 108px;
+    }
+
+    .result-box {
+      min-height: 260px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      padding: 12px 18px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      box-shadow: 0 12px 24px rgba(139, 92, 246, 0.35);
+    }
+
+    .btn.secondary {
+      background: rgba(148,163,184,0.12);
+      color: var(--text);
+      border: 1px solid rgba(148,163,184,0.24);
+    }
+
+    .btn.success {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: white;
+    }
+
+    .status {
+      min-height: 24px;
+      font-size: 13px;
+      margin-top: 10px;
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .inline-note {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 900px) {
+      .content { grid-template-columns: 1fr; }
+      .panel.left { border-right: none; border-bottom: 1px solid var(--border); }
+      .field-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="app">
+      <div class="header">
+        <span class="tag">AI Tool</span>
+        <h1>AI Prompt Generator</h1>
+        <p class="subtitle">Generate powerful prompts for any topic in seconds. Perfect for ChatGPT, Claude, Gemini, and other AI tools.</p>
+      </div>
+
+      <div class="content">
+        <div class="panel left">
+          <div class="field-grid">
+            <div class="form-group">
+              <label for="topic">Topic</label>
+              <input id="topic" type="text" placeholder="Example: Digital marketing for small businesses" />
+            </div>
+
+            <div class="form-group">
+              <label for="goal">Main Goal</label>
+              <input id="goal" type="text" placeholder="Example: Create a high-converting blog post" />
+            </div>
+
+            <div class="form-group">
+              <label for="promptType">Prompt Type</label>
+              <select id="promptType">
+                <option value="general">General AI Prompt</option>
+                <option value="blog">Blog Writing</option>
+                <option value="seo">SEO Article</option>
+                <option value="social">Social Media Post</option>
+                <option value="marketing">Marketing Copy</option>
+                <option value="email">Email Campaign</option>
+                <option value="business">Business Strategy</option>
+                <option value="study">Study / Learning</option>
+                <option value="code">Coding / Development</option>
+                <option value="product">Product Description</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="targetAudience">Target Audience</label>
+              <select id="targetAudience">
+                <option value="general audience">General Audience</option>
+                <option value="beginners">Beginners</option>
+                <option value="experts">Experts</option>
+                <option value="students">Students</option>
+                <option value="business owners">Business Owners</option>
+                <option value="marketers">Marketers</option>
+                <option value="developers">Developers</option>
+                <option value="content creators">Content Creators</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="tone">Tone</label>
+              <select id="tone">
+                <option value="professional">Professional</option>
+                <option value="friendly">Friendly</option>
+                <option value="persuasive">Persuasive</option>
+                <option value="creative">Creative</option>
+                <option value="formal">Formal</option>
+                <option value="casual">Casual</option>
+                <option value="engaging">Engaging</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="language">Language</label>
+              <select id="language">
+                <option value="English">English</option>
+                <option value="Urdu">Urdu</option>
+                <option value="Arabic">Arabic</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="outputFormat">Output Format</label>
+              <select id="outputFormat">
+                <option value="detailed paragraph">Detailed Paragraph</option>
+                <option value="step-by-step guide">Step-by-Step Guide</option>
+                <option value="bullet points">Bullet Points</option>
+                <option value="full article">Full Article</option>
+                <option value="social media copy">Social Media Copy</option>
+                <option value="email template">Email Template</option>
+                <option value="structured plan">Structured Plan</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="length">Length</label>
+              <select id="length">
+                <option value="short">Short</option>
+                <option value="medium">Medium</option>
+                <option value="detailed">Detailed</option>
+                <option value="very detailed">Very Detailed</option>
+              </select>
+            </div>
+
+            <div class="form-group full">
+              <label for="extraDetails">Extra Instructions</label>
+              <textarea id="extraDetails" placeholder="Example: Include headings, examples, SEO keywords, CTA, and actionable steps. Keep it beginner-friendly."></textarea>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn primary" id="generateBtn">Generate Prompt</button>
+            <button class="btn secondary" id="resetBtn" type="button">Reset</button>
+            <button class="btn success" id="copyBtn" type="button">Copy</button>
+          </div>
+
+          <div class="status" id="statusMessage" aria-live="polite"></div>
+          <div class="inline-note">Tip: Use this tool for blogs, SEO, marketing, coding, business, study, and content creation.</div>
+        </div>
+
+        <div class="panel right">
+          <div class="form-group">
+            <label for="outputPrompt">Generated Prompt</label>
+            <textarea id="outputPrompt" class="result-box" readonly placeholder="Your generated prompt will appear here..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const formIds = {
+      topic: 'topic',
+      goal: 'goal',
+      promptType: 'promptType',
+      targetAudience: 'targetAudience',
+      tone: 'tone',
+      language: 'language',
+      outputFormat: 'outputFormat',
+      length: 'length',
+      extraDetails: 'extraDetails'
+    };
+
+    const defaults = {
+      topic: 'AI tools for content creators',
+      goal: 'Create a high-quality article that helps beginners understand the topic clearly',
+      promptType: 'blog',
+      targetAudience: 'beginners',
+      tone: 'professional',
+      language: 'English',
+      outputFormat: 'full article',
+      length: 'medium',
+      extraDetails: 'Use easy-to-understand language, add headings, examples, and a conclusion. Include actionable tips.'
+    };
+
+    function getValue(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function setStatus(message, type = 'success') {
+      const statusEl = document.getElementById('statusMessage');
+      statusEl.textContent = message;
+      statusEl.style.color = type === 'error' ? '#fca5a5' : '#86efac';
+    }
+
+    function escapePrompt(value) {
+      return value.replace(/\s+/g, ' ').trim();
+    }
+
+    function buildPrompt() {
+      const topic = escapePrompt(getValue(formIds.topic)) || defaults.topic;
+      const goal = escapePrompt(getValue(formIds.goal)) || defaults.goal;
+      const type = document.getElementById(formIds.promptType).value || defaults.promptType;
+      const audience = document.getElementById(formIds.targetAudience).value || defaults.targetAudience;
+      const tone = document.getElementById(formIds.tone).value || defaults.tone;
+      const language = document.getElementById(formIds.language).value || defaults.language;
+      const format = document.getElementById(formIds.outputFormat).value || defaults.outputFormat;
+      const length = document.getElementById(formIds.length).value || defaults.length;
+      const details = escapePrompt(getValue(formIds.extraDetails)) || defaults.extraDetails;
+
+      let typeLabel = 'general AI prompt';
+      if (type === 'blog') typeLabel = 'blog writing prompt';
+      if (type === 'seo') typeLabel = 'SEO article prompt';
+      if (type === 'social') typeLabel = 'social media content prompt';
+      if (type === 'marketing') typeLabel = 'marketing copy prompt';
+      if (type === 'email') typeLabel = 'email campaign prompt';
+      if (type === 'business') typeLabel = 'business strategy prompt';
+      if (type === 'study') typeLabel = 'study and learning prompt';
+      if (type === 'code') typeLabel = 'coding and development prompt';
+      if (type === 'product') typeLabel = 'product description prompt';
+
+      let outputStr = `Act as an expert content strategist and copywriter.\n\n`;
+      outputStr += `Create a ${typeLabel} about "${topic}".\n`;
+      outputStr += `The main goal is: ${goal}.\n`;
+      outputStr += `Write for ${audience} in a ${tone} tone.\n`;
+      outputStr += `The final output should be in ${language}, and the content should be delivered as a ${format}.\n`;
+      outputStr += `Keep the response ${length} in length and make it highly useful, engaging, and actionable.\n\n`;
+      outputStr += `Additional instructions: ${details}.\n\n`;
+      outputStr += `Please include strong headings, clear structure, practical examples, and a polished final result.`;
+
+      return outputStr;
+    }
+
+    function generatePrompt() {
+      const generated = buildPrompt();
+      document.getElementById('outputPrompt').value = generated;
+      setStatus('Prompt generated successfully.');
+    }
+
+    function copyPrompt() {
+      const output = document.getElementById('outputPrompt');
+      const text = output.value.trim();
+
+      if (!text) {
+        setStatus('Please generate a prompt first.', 'error');
+        return;
+      }
+
+      try {
+        output.focus();
+        output.select();
+        document.execCommand('copy');
+        setStatus('Prompt copied to clipboard.');
+      } catch (error) {
+        try {
+          navigator.clipboard.writeText(text).then(() => {
+            setStatus('Prompt copied to clipboard.');
+          }).catch(() => {
+            setStatus('Copy failed. Please select and copy manually.', 'error');
+          });
+        } catch (e) {
+          setStatus('Copy failed. Please select and copy manually.', 'error');
+        }
+      }
+    }
+
+    function fillDefaults() {
+      document.getElementById(formIds.topic).value = defaults.topic;
+      document.getElementById(formIds.goal).value = defaults.goal;
+      document.getElementById(formIds.promptType).value = defaults.promptType;
+      document.getElementById(formIds.targetAudience).value = defaults.targetAudience;
+      document.getElementById(formIds.tone).value = defaults.tone;
+      document.getElementById(formIds.language).value = defaults.language;
+      document.getElementById(formIds.outputFormat).value = defaults.outputFormat;
+      document.getElementById(formIds.length).value = defaults.length;
+      document.getElementById(formIds.extraDetails).value = defaults.extraDetails;
+      const output = document.getElementById('outputPrompt');
+      output.value = buildPrompt();
+      setStatus('Default values loaded.');
+    }
+
+    function resetForm() {
+      document.getElementById('topic').value = '';
+      document.getElementById('goal').value = '';
+      document.getElementById('promptType').value = 'general';
+      document.getElementById('targetAudience').value = 'general audience';
+      document.getElementById('tone').value = 'professional';
+      document.getElementById('language').value = 'English';
+      document.getElementById('outputFormat').value = 'detailed paragraph';
+      document.getElementById('length').value = 'medium';
+      document.getElementById('extraDetails').value = '';
+      document.getElementById('outputPrompt').value = '';
+      setStatus('Form reset.');
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', generatePrompt);
+    document.getElementById('copyBtn').addEventListener('click', copyPrompt);
+    document.getElementById('resetBtn').addEventListener('click', resetForm);
+
+    fillDefaults();
+  </script>
+</body>
+</html>
